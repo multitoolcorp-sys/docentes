@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DocenteTime</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF.js for client-side parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent);"></i>
+                <h1>DocenteTime</h1>
+            </div>
+            <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+                <button class="btn-icon" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
+                <div id="live-clock" class="clock">00:00:00</div>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <!-- Next Event card -->
+            <section id="next-event" class="glass-card hidden">
+                <div class="card-badge">PRÓXIMA CLASE</div>
+                <h2 id="next-subject">--</h2>
+                <div class="time-info">
+                    <span id="next-time-range"><i class="fa-regular fa-clock"></i> --:--</span>
+                </div>
+            </section>
+
+            <!-- Schedule List Area -->
+            <div id="items-container"></div>
+
+            <!-- Upload Section (Persistent) -->
+            <section class="upload-section glass-card" id="upload-card">
+                <i class="fa-solid fa-file-pdf upload-icon" style="font-size: 2.5rem; margin-bottom: 10px;"></i>
+                <h3>Importar Horario</h3>
+                <p style="font-size: 0.9rem; color: var(--text-dim);">Sube otro PDF para crear un nuevo bloque</p>
+                <input type="file" id="pdf-input" accept=".pdf" hidden>
+                <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+                    <button class="btn-primary" style="flex: 1;" onclick="document.getElementById('pdf-input').click()">
+                        <i class="fa-solid fa-plus"></i> PDF
+                    </button>
+                    <button class="btn-secondary" style="flex: 1;" onclick="openAddModal()">
+                        <i class="fa-solid fa-keyboard"></i> Manual
+                    </button>
+                </div>
+                <div id="upload-status" style="margin-top: 10px; font-size: 0.8rem;"></div>
+            </section>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-icon" onclick="resetApp()" style="font-size: 0.9rem; color: var(--danger);">
+                    <i class="fa-solid fa-trash-can"></i> Borrar todos los datos
+                </button>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="add-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>Nueva Alarma</h2>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label>Materia</label>
+                    <input type="text" id="manual-subject" placeholder="Nombre de la clase">
+                </div>
+                <div class="input-group">
+                    <label>Hora de inicio</label>
+                    <input type="time" id="manual-time">
+                </div>
+                <div class="input-group">
+                    <label>Días hábiles</label>
+                    <div class="days-selector">
+                        <button class="day-btn" data-day="1">L</button>
+                        <button class="day-btn" data-day="2">M</button>
+                        <button class="day-btn" data-day="3">Mi</button>
+                        <button class="day-btn" data-day="4">J</button>
+                        <button class="day-btn" data-day="5">V</button>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-secondary" onclick="closeModal('add-modal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveManualAlarm()">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit-group-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>Editar Nombre</h2>
+                <div class="input-group" style="margin-top: 20px;">
+                    <input type="text" id="edit-group-input" placeholder="Nuevo nombre">
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-secondary" onclick="closeModal('edit-group-modal')">Cancelar</button>
+                    <button class="btn-primary" onclick="saveGroupName()">Actualizar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="pdf-name-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>Nombre del Horario</h2>
+                <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 20px;">¿Cómo quieres llamar a este grupo?</p>
+                <input type="text" id="pdf-group-name">
+                <div class="modal-buttons">
+                    <button class="btn-primary" style="width: 100%;" onclick="confirmPdfUpload()">Crear Horario</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-content glass-card">
+                <h2>Configuración</h2>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label>Sonido de Alarma</label>
+                    <button class="btn-secondary" onclick="document.getElementById('sound-input').click()">Elegir Archivo</button>
+                    <button class="btn-secondary" style="margin-top: 5px;" onclick="testSound()">Probar Sonido</button>
+                    <input type="file" id="sound-input" accept="audio/*" hidden>
+                    <p id="current-sound-name" style="font-size: 0.8rem; color: var(--accent); margin-top: 5px;">Original: alarma.wav</p>
+                </div>
+                <button class="btn-primary" style="width: 100%;" onclick="closeModal('settings-modal')">Cerrar</button>
+            </div>
+        </div>
+
+        <div id="alarm-overlay" class="alarm-overlay hidden">
+            <div class="alarm-content glass-card" style="text-align: center; padding: 40px 20px;">
+                <div class="bell-animation" onclick="testSound()" style="cursor: pointer; margin-bottom: 20px;">
+                    <i class="fa-solid fa-bell" style="font-size: 4rem; color: var(--accent);"></i>
+                </div>
+                <h2 style="margin-bottom: 10px;">¡Cambio de Hora!</h2>
+                <p id="alarm-message" style="margin-bottom: 30px;">Es momento de la clase</p>
+                <button class="btn-primary" style="width: 100%;" onclick="dismissAlarm()">Aceptar</button>
+            </div>
+        </div>
+
+        <audio id="alarm-sound" src="static/alarma.wav" loop></audio>
+    </div>
+    <script src="static/script.js"></script>
+</body>
+</html>

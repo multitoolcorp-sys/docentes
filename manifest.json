@@ -1,0 +1,17 @@
+{
+  "name": "DocenteTime",
+  "short_name": "DocenteTime",
+  "description": "Gestión de horarios y alarmas para docentes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0c29",
+  "theme_color": "#8e2de2",
+  "icons": [
+    {
+      "src": "static/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
