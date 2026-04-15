@@ -1,0 +1,145 @@
+:root {
+    --primary: #8e2de2;
+    --primary-light: #4a00e0;
+    --bg-dark: #0f0c29;
+    --text: #ffffff;
+    --text-dim: #b0b0b0;
+    --glass: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --accent: #00d2ff;
+    --danger: #ff416c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: var(--text);
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Prevent accidental text selection while scrolling */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 20px 100px 20px; /* Extra bottom padding for scrolling */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.logo h1 { font-size: 1.3rem; font-weight: 600; }
+.clock { font-size: 1rem; background: var(--glass); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--glass-border); }
+
+/* Glass Cards */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Scrollable Main Area */
+main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Schedule List */
+.schedule-group {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.group-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.group-info { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.group-actions { display: flex; align-items: center; gap: 12px; }
+
+.group-body { padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.group-body.collapsed { display: none; }
+
+.schedule-item {
+    background: rgba(255,255,255,0.03);
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: text; /* Allow subjets to be selected if needed */
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary), var(--primary-light));
+    color: white; border: none; padding: 12px 20px; border-radius: 12px;
+    font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    justify-content: center;
+}
+
+.btn-secondary { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 10px 15px; border-radius: 10px; }
+.btn-icon { background: none; border: none; color: var(--text-dim); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* Modals */
+.modal, .alarm-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+
+.modal-content { width: 100%; max-width: 400px; pointer-events: auto; }
+
+/* Ensure inputs are touchable and allow default behavior */
+input[type="time"], input[type="text"] {
+    user-select: auto;
+    -webkit-user-select: auto;
+    touch-action: auto;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.hidden { display: none !important; }
+
+/* Switch */
+.switch { position: relative; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #222; border-radius: 24px; border: 1px solid var(--glass-border); transition: 0.3s; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; border-radius: 50%; transition: 0.3s; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(20px); }
