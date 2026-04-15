@@ -1,10 +1,10 @@
 const CACHE_NAME = 'docentetime-v1';
 const ASSETS = [
   '/',
-  '/static/style.css',
-  '/static/script.js',
-  '/static/logo.png',
-  '/static/alarma.wav'
+  'style.css',
+  'script.js',
+  'logo.png',
+  'alarma.wav'
 ];
 
 self.addEventListener('install', event => {
